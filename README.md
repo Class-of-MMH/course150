@@ -9,8 +9,8 @@ Learning Outcomes.<br/>
 Enhanced Team Collaboration and Communication Skills. Developing problem-solving skills through game development. Implementing basic algorithms for collision detection and score tracking. Gaining experience in user input handling and game mechanics.
 
 ## Description
-Space Shooter is a 2d game developed using C++ and OpenGL framework. The player takes control of a spaceship and the goal is to defeat the enemy boss while avoiding the bullets fired by the him and his minions. The boss has a health bar and each time the player hits him with a bullet, the boss's health decreases by one point and the player's score increases by one point. When the boss is finally defeated, another one respawns with a lot more hitpoints.<br/>
-The player can collect two different types of collectibles, one for increasing his firerate, and the other reduces the boss's health by half.
+Space Shooter is a 2d game developed using C++. The player takes control of a spaceship and the goal is to defeat the enemies while avoiding the bullets fired by them. Each time the player hits enemies with a bullet, the player's score increases by 50 points.The movements of the enemies get faster gradually <br/>
+
 ## Controls
 <ul>
 <li> Use w,a,s,d to move the player</li>
