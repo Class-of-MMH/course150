@@ -12,23 +12,23 @@ using namespace std;
 COORD coord = {0, 0}; // sets coordinates to 0,0
 bool endGame=false;
 bool bullet=false;
+bool thas=false;
 int bullet_Y=1;
+int x2_bullet_x,x2_bullet_Y,boom=0;
 int ciclos=0;
 int bullet_X=0;
 int score=0;
 int k=0;
+int health=100;
 bool shooting=false;
+int v1,v2,tui;
 
     void gotoxy (int x, int y)
 {
         coord.X = x; coord.Y = y; // setting the X and Y coordinates
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-    void playMusic() {
-    // Specify the file name directly in the PlaySound function
-    PlaySound(TEXT("Suzume.wav"), NULL, SND_FILENAME | SND_ASYNC);
 
-}
     void fire() {
     // Specify the file name directly in the PlaySound function
     PlaySound(TEXT("fire.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -138,6 +138,7 @@ void draw_enemy()
 
 }
 
+
 void Enemy_movement()
 {
 
@@ -177,26 +178,6 @@ void Enemy_movement()
     }
 }
 
-void controller()
-{
-    char x;
-    if(kbhit())
-    {
-        x=getch();
-    }
-
-    switch(x)
-    {
-        case 'a': if(my_ship.posX>4)  { my_ship.posX--; } break;
-        case 's': if(my_ship.posY<24) { my_ship.posY++; } break;
-        case 'd': if(my_ship.posX<48) { my_ship.posX++; } break;
-        case 'w': if(my_ship.posY>4)  { my_ship.posY--; } break;
-        case 32:  {my_ship.shoot++; bullet=true; shooting=true;k=1;  } break; //spacebar
-        case 27: { gotoxy(2,26); exit(0); endGame=true; } break;        //esc
-    }
-
-}
-
 void printPanel()
 {
     //  Print information
@@ -214,10 +195,30 @@ void printPanel()
     printf("Space- shoot");
     gotoxy(52,13);
     printf("Shoots %d", my_ship.shoot);
+    gotoxy(52,16);
+    printf("Health %d %%",health);
+   // printf("Gametime %d boom %d", ciclos,boom);
     gotoxy(52,14);
-   // printf("Gametime %d", ciclos);
-   // gotoxy(52,15);
     printf("Score: %d",score);
+
+}
+void controller()
+{
+    char x;
+    if(kbhit())
+    {
+        x=getch();
+    }
+
+    switch(x)
+    {
+        case 'a': if(my_ship.posX>4)  { my_ship.posX--; } break;
+        case 's': if(my_ship.posY<24) { my_ship.posY++; } break;
+        case 'd': if(my_ship.posX<48) { my_ship.posX++; } break;
+        case 'w': if(my_ship.posY>4)  { my_ship.posY--; } break;
+        case 32:  {my_ship.shoot++; bullet=true; shooting=true;k=1;  } break; //spacebar
+        case 27: { printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER"); gotoxy(2,26); exit(0); endGame=true; } break;        //esc
+    }
 
 }
 
@@ -229,33 +230,27 @@ void Shooting()
     {
         if(shooting==true) { bullet_X=my_ship.posX; shooting=false;}
         bullet_Y++;
-        gotoxy(bullet_X,my_ship.posY-bullet_Y); //initial shooting pos
+        gotoxy(bullet_X,my_ship.posY-bullet_Y); //y will change everytime; this will make the bullet move
         textcolor(6);
         printf("A");
         textcolor(7);
     }
-    if((bullet_Y>1)&&((abs(bullet_X-x1.posX)<=1 && bullet_Y==23-x1.posY) || (abs(bullet_X-x2.posX)<=1 && bullet_Y==23-x2.posY) || (abs(bullet_X-x3.posX)<=1 && bullet_Y==23-x3.posY)) ){
+    if((bullet_Y>1)&&((abs(bullet_X-x1.posX)<=1 && my_ship.posY-bullet_Y==x1.posY) || (abs(bullet_X-x2.posX)<=1 && my_ship.posY-bullet_Y==x2.posY) || (abs(bullet_X-x3.posX)<=1 && my_ship.posY-bullet_Y==x3.posY)) ){
         {
             score+=50;
             printPanel();
-            gotoxy(bullet_X-4,23-bullet_Y);
+            gotoxy(bullet_X-3,23-bullet_Y);
+            textcolor(2);
+            printf("BOOM 50+");
 
-            int x=rand()%3;
-    switch(x)
-    {
-        case 0:printf("Uff boddo legeche"); break;
-        case 1:printf("Thaaaaas"); break;
-        case 2:printf("Uri Baba"); break;
 
-    }
-
-            Sleep(2000);
+          //  Sleep(2000);
         bullet=false;
         bullet_Y=1;
         shooting=false;
     }
     }
-    if(bullet_Y>18) // bullet will disappear when reached top
+    if(my_ship.posY-bullet_Y<4) // bullet will disappear when reached top
     {
         bullet=false;
         bullet_Y=1;
@@ -277,6 +272,63 @@ void initializePosition()
     x3.posY=4;
 }
 
+
+void Enemy_Shooting()
+{
+
+    // function that creates the shoot of the player
+
+
+    if(boom!=0){
+
+
+            if(boom==7){
+
+        switch(tui){
+
+        case 0: {v1=x1.posX; v2=x1.posY;} break;
+        case 1: {v1=x2.posX; v2=x2.posY;} break;
+        case 2: {v1=x3.posX; v2=x3.posY;} break;
+    }
+
+        if(thas==true) {
+
+        x2_bullet_x=v1;
+        thas=false;
+       }
+
+        x2_bullet_Y++;
+        gotoxy(x2_bullet_x,v2+x2_bullet_Y); //initial shooting pos
+        textcolor(6);
+        printf("V");
+
+
+       // Sleep(110);
+        textcolor(7);
+    }
+    else boom=0;}
+    if(((abs(x2_bullet_x-my_ship.posX)<=1 && v2+x2_bullet_Y==my_ship.posY)))
+        {
+            score-=30;
+            health-=25;
+            if(health==0){ gotoxy(8,13); textcolor(1); printf("<<--Remember, We only live once-->>"); printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER"); gotoxy(2,26); exit(0); endGame=true; }
+            gotoxy(my_ship.posX+3,my_ship.posY);
+        textcolor(4);
+        printf("-30");
+
+        boom=0;
+        x2_bullet_Y=1;
+        thas=false;
+    }
+
+    if(v2+x2_bullet_Y>23) // bullet will disappear when reached bottom
+    {
+        boom=0;
+        x2_bullet_Y=1;
+        thas=false;
+    }
+}
+
 int main()
 {
     system("mode 65,28");
@@ -288,17 +340,27 @@ int main()
     while(endGame==false)
     {
 
+
         int p=10;
-       if(p>2) p=10-(score/250);
+       if((score/250)<9) p=10-(score/250);
 
         if(ciclos%p==0)// its a loop that will make the enemy ships spawn ein every 10 timeunits
         {
                 Enemy_movement();
         }
         border();
-      drawship();      //draws our spaceship
+        drawship();      //draws our spaceship
         draw_enemy();  //draws the enemies
         Shooting();
+
+        if(boom==0) {boom=rand()%13;
+                    if(boom!=0) {
+                            thas=true;
+                        tui=rand()%3;}
+
+        }
+        Enemy_Shooting();
+
         controller();   // checks if key is pressed
         printPanel();
         Sleep(40);  // pauses excecution for 40 miliseconds
@@ -311,10 +373,7 @@ int main()
       fireThread.join();
       }
       }
-       // if((ciclos+score)%200==0) {
-        //        thread musicThread(playMusic);
-       //         musicThread.join();
-     // }
+
 
     ciclos++;
 
