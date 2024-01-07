@@ -13,15 +13,17 @@ COORD coord = {0, 0}; // sets coordinates to 0,0
 bool endGame=false;
 bool bullet=false;
 bool thas=false;
+bool thas2=false;
+bool thas3=false;
 int bullet_Y=1;
-int x2_bullet_x,x2_bullet_Y,boom=0;
+int x1_bullet_x,x1_bullet_Y,x2_bullet_x,x2_bullet_Y,x3_bullet_x,x3_bullet_Y,boom=0;
 int ciclos=0;
 int bullet_X=0;
 int score=0;
 int k=0;
 int health=100;
 bool shooting=false;
-int v1,v2,tui;
+int v1,v2,tui,boom2,boom3;
 
     void gotoxy (int x, int y)
 {
@@ -32,6 +34,11 @@ int v1,v2,tui;
     void fire() {
     // Specify the file name directly in the PlaySound function
     PlaySound(TEXT("fire.wav"), NULL, SND_FILENAME | SND_ASYNC);
+}
+      void playMusic() {
+    // Specify the file name directly in the PlaySound function
+    PlaySound(TEXT("Suzume.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
 }
 
     void textcolor (int iColor)//function to generate color
@@ -217,7 +224,9 @@ void controller()
         case 'd': if(my_ship.posX<48) { my_ship.posX++; } break;
         case 'w': if(my_ship.posY>4)  { my_ship.posY--; } break;
         case 32:  {my_ship.shoot++; bullet=true; shooting=true;k=1;  } break; //spacebar
-        case 27: { printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER"); gotoxy(2,26); exit(0); endGame=true; } break;        //esc
+        case 27: { printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER"); gotoxy(2,26); thread musicThread(playMusic);
+               musicThread.join();
+               Sleep(12000); exit(0); endGame=true; } break;        //esc
     }
 
 }
@@ -284,21 +293,15 @@ void Enemy_Shooting()
 
             if(boom==7){
 
-        switch(tui){
-
-        case 0: {v1=x1.posX; v2=x1.posY;} break;
-        case 1: {v1=x2.posX; v2=x2.posY;} break;
-        case 2: {v1=x3.posX; v2=x3.posY;} break;
-    }
 
         if(thas==true) {
 
-        x2_bullet_x=v1;
+        x1_bullet_x=x1.posX;
         thas=false;
        }
 
-        x2_bullet_Y++;
-        gotoxy(x2_bullet_x,v2+x2_bullet_Y); //initial shooting pos
+        x1_bullet_Y++;
+        gotoxy(x1_bullet_x,x1.posY+x1_bullet_Y); //initial shooting pos
         textcolor(6);
         printf("V");
 
@@ -307,44 +310,148 @@ void Enemy_Shooting()
         textcolor(7);
     }
     else boom=0;}
-    if(((abs(x2_bullet_x-my_ship.posX)<=1 && v2+x2_bullet_Y==my_ship.posY)))
+    if(((abs(x1_bullet_x-my_ship.posX)<=1 && x1.posY+x1_bullet_Y==my_ship.posY)))
         {
             score-=30;
             health-=25;
-            if(health==0){ gotoxy(8,13); textcolor(1); printf("<<--Remember, We only live once-->>"); printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER"); gotoxy(2,26); exit(0); endGame=true; }
+            if(health==0){ gotoxy(8,13); textcolor(1); printf("<<--Remember, We only live once-->>"); printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER");thread musicThread(playMusic);
+               musicThread.join();
+               Sleep(12000); gotoxy(2,26); exit(0); endGame=true; }
             gotoxy(my_ship.posX+3,my_ship.posY);
         textcolor(4);
         printf("-30");
 
         boom=0;
-        x2_bullet_Y=1;
+        x1_bullet_Y=1;
         thas=false;
     }
 
-    if(v2+x2_bullet_Y>23) // bullet will disappear when reached bottom
+    if(x1.posY+x1_bullet_Y>23) // bullet will disappear when reached bottom
     {
         boom=0;
-        x2_bullet_Y=1;
+        x1_bullet_Y=1;
         thas=false;
     }
 }
+
+void Enemy_Shooting2()
+{
+
+    // function that creates the shoot of the player
+
+
+    if(boom2!=0){
+
+
+            if(boom2==11){
+
+
+        if(thas2==true) {
+
+        x2_bullet_x=x2.posX;
+        thas2=false;
+       }
+
+        x2_bullet_Y++;
+        gotoxy(x2_bullet_x,x2.posY+x2_bullet_Y); //initial shooting pos
+        textcolor(6);
+        printf("V");
+        textcolor(7);
+    }
+    else boom2=0;}
+    if(((abs(x2_bullet_x-my_ship.posX)<=1 && x2.posY+x2_bullet_Y==my_ship.posY)))
+        {
+            score-=30;
+            health-=25;
+            if(health==0){ gotoxy(8,13); textcolor(1); printf("<<--Remember, We only live once-->>"); printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER");thread musicThread(playMusic);
+               musicThread.join();
+               Sleep(12000); gotoxy(2,26); exit(0); endGame=true; }
+            gotoxy(my_ship.posX+3,my_ship.posY);
+        textcolor(4);
+        printf("-30");
+
+        boom2=0;
+        x2_bullet_Y=1;
+        thas2=false;
+    }
+
+    if(x2.posY+x2_bullet_Y>23) // bullet will disappear when reached bottom
+    {
+        boom2=0;
+        x2_bullet_Y=1;
+        thas2=false;
+    }
+}
+
+void Enemy_Shooting3()
+{
+
+   if(boom3!=0){
+            if(boom3==13){
+
+            if(thas3==true) {
+            x3_bullet_x=x3.posX;
+            thas3=false;
+                }
+
+        x3_bullet_Y++;
+        gotoxy(x3_bullet_x,x3.posY+x3_bullet_Y); //initial shooting pos
+        textcolor(6);
+        printf("V");
+        textcolor(7);
+    }
+
+    else boom3=0;}
+    if(((abs(x3_bullet_x-my_ship.posX)<=1 && x3.posY+x3_bullet_Y==my_ship.posY)))
+        {
+            score-=30;
+            health-=25;
+            if(health==0){ gotoxy(8,13); textcolor(1); printf("<<--Remember, We only live once-->>"); printPanel(); gotoxy(2,15); printf("\t\t    GAME OVER");thread musicThread(playMusic);
+               musicThread.join();
+               Sleep(12000); gotoxy(2,26); exit(0); endGame=true; }
+            gotoxy(my_ship.posX+3,my_ship.posY);
+        textcolor(4);
+        printf("-30");
+
+        boom3=0;
+        x3_bullet_Y=1;
+        thas3=false;
+    }
+
+    if(x3.posY+x3_bullet_Y>23) // bullet will disappear when reached bottom
+    {
+        boom3=0;
+        x3_bullet_Y=1;
+        thas3=false;
+    }
+}
+
+
 
 int main()
 {
     system("mode 65,28");
     system("title Telapia Spaceship Shooter");
     initializePosition();
+    border();
+        drawship();      //draws our spaceship
+        draw_enemy();
     score=0;
+    gotoxy(52,10); textcolor(9); printf("LIFE IS ONLY PRECIOUS CAUSE ITS GONNA END SOMEDAY");gotoxy(52,12); printf("SO JUST HIT 'Y'/'y' AND PRESS ENTER :");
+        char pick;
+             gotoxy(52,13);
+               cin>>pick;
+               Sleep(100);
 
-
-    while(endGame==false)
+   if(pick=='y' ||pick=='Y'){ while(endGame==false)
     {
 
 
         int p=10;
        if((score/250)<9) p=10-(score/250);
 
-        if(ciclos%p==0)// its a loop that will make the enemy ships spawn ein every 10 timeunits
+        if(ciclos%p==0)// its a loop that will make the enemy ships spawn ein every 10 mili seconds
+
         {
                 Enemy_movement();
         }
@@ -356,10 +463,27 @@ int main()
         if(boom==0) {boom=rand()%13;
                     if(boom!=0) {
                             thas=true;
-                        tui=rand()%3;}
+                        }
 
         }
         Enemy_Shooting();
+
+
+        if(boom2==0) {boom2=rand()%19;
+                    if(boom2!=0) {
+                            thas2=true;
+                        }
+
+        }
+        Enemy_Shooting2();
+
+        if(boom3==0) {boom3=rand()%37;
+                    if(boom3!=0) {
+                            thas3=true;
+                        }
+
+        }
+        Enemy_Shooting3();
 
         controller();   // checks if key is pressed
         printPanel();
@@ -369,16 +493,14 @@ int main()
 
       if(k==1){
             {thread fireThread(fire);
-      k=0;
-      fireThread.join();
+                k=0;
+                    fireThread.join();
+                    }
       }
-      }
-
-
-    ciclos++;
-
-
+        ciclos++;
         }
+   }
+
 
 
     return 0;
